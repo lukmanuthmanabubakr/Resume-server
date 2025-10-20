@@ -15,6 +15,8 @@ router.post("/", protect, createResume);
 router.post("/", protect, getUserResumes);
 router.post("/:id", protect, getResumeById);
 router.post("/:id", protect, updateResume);
-router.post("/:id/upload-images", protect, uploadResumeImages);
+// router.post("/:id/upload-images", protect, uploadResumeImages);
 
 router.post("/:id", protect, deleteResume);
+
+module.exports = router;

@@ -5,7 +5,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
-// const resumeRoutes = require("./routes/resumeRoutes");
+const resumeRoutes = require("./routes/resumeRoutes");
 
 const app = express();
 
@@ -26,6 +26,7 @@ app.use(express.json());
 
 //Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/resume", resumeRoutes);
 
 app.get("/", (req, res) => {
   res.send("Home page");
