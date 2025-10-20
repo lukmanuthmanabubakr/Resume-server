@@ -7,7 +7,7 @@ const {
   deleteResume,
 } = require("../controllers/resumeController");
 const { protect } = require("../middlesware/authMiddleware");
-const { uploadResumeImages } = require("../controllers/uploadImages");
+// const { uploadResumeImages } = require("../controllers/uploadImages");
 
 const router = express.Router();
 
