@@ -14,6 +14,6 @@ const createResume = async (req, res) => {
   }
 };
 
-// @desc Create a new resume
+// @desc Get all resumes for logged-in-user
 // @route POST /api/resumes
 // @access Private
