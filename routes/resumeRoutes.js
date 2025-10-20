@@ -12,7 +12,7 @@ const { protect } = require("../middlesware/authMiddleware");
 const router = express.Router();
 
 router.post("/", protect, createResume);
-router.post("/", protect, getUserResumes);
+router.get("/", protect, getUserResumes);
 router.post("/:id", protect, getResumeById);
 router.post("/:id", protect, updateResume);
 // router.post("/:id/upload-images", protect, uploadResumeImages);

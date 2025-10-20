@@ -88,7 +88,18 @@ const createResume = async (req, res) => {
 // @desc Get all resumes for logged-in-user
 // @route GET /api/resume
 // @access Private
-const getUserResumes = async (req, res) => {};
+const getUserResumes = async (req, res) => {
+  try {
+    const resumes = (await Resume.find({ userId: req.user._id })).sort({
+      updatedAt: -1,
+    });
+    res.json(resumes)
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to create reume", error: error.message });
+  }
+};
 
 // @desc Get single resume by ID
 // @route GET /api/resume/:id
