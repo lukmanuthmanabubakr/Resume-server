@@ -13,10 +13,10 @@ const router = express.Router();
 
 router.post("/", protect, createResume);
 router.get("/", protect, getUserResumes);
-router.post("/:id", protect, getResumeById);
-router.post("/:id", protect, updateResume);
+router.get("/:id", protect, getResumeById);
+router.put("/:id", protect, updateResume);
 // router.post("/:id/upload-images", protect, uploadResumeImages);
 
-router.post("/:id", protect, deleteResume);
+router.delete("/:id", protect, deleteResume);
 
 module.exports = router;

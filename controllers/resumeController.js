@@ -90,10 +90,10 @@ const createResume = async (req, res) => {
 // @access Private
 const getUserResumes = async (req, res) => {
   try {
-    const resumes = (await Resume.find({ userId: req.user._id })).sort({
+    const resumes = await Resume.find({ userId: req.user._id }).sort({
       updatedAt: -1,
     });
-    res.json(resumes)
+    res.json(resumes);
   } catch (error) {
     res
       .status(500)
@@ -104,15 +104,102 @@ const getUserResumes = async (req, res) => {
 // @desc Get single resume by ID
 // @route GET /api/resume/:id
 // @access Private
-const getResumeById = async (req, res) => {};
+const getResumeById = async (req, res) => {
+  try {
+    const resume = await Resume.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+    if (!resume) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+
+    res.json(resume);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to create reume", error: error.message });
+  }
+};
+
 // @desc Update a resume
 // @route PUT /api/resume/:id
 // @access Private
-const updateResume = async (req, res) => {};
+const updateResume = async (req, res) => {
+  try {
+    const resume = await Resume.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+    if (!resume) {
+      return res
+        .status(404)
+        .json({ message: "Resume not found or unauthorized" });
+    }
+    //Merge updates from req.body into existing resume
+    Object.assign(resume, req.body);
+
+    //Save updated resume
+    const savedResume = await resume.save();
+
+    res.json(savedResume);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to create reume", error: error.message });
+  }
+};
+
 // @desc Delete a resume
 // @route DELETE /api/resume/:id
 // @access Private
-const deleteResume = async (req, res) => {};
+const deleteResume = async (req, res) => {
+  try {
+    const resume = await Resume.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+    if (!resume) {
+      return res
+        .status(404)
+        .json({ message: "Resume not found or unauthorized" });
+    }
+
+    //Delete thumbnailLink and profilePreviewUrl images from uploads folder
+    const uploadsFolder = path.join(__dirname, "..", "uploads");
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+
+    if (resume.thumbnailLink) {
+      const oldThumbnail = path.join(
+        uploadsFolder,
+        path.basename(resume.thumbnailLink)
+      );
+      if (fs.existsSync(oldThumbnail)) fs.unlinkSync(oldThumbnail);
+    }
+
+    if (resume.profileInfo?.profilePreviewUrl) {
+      const oldProfile = path.join(
+        uploadsFolder.path.basename(resume.profileInfo.profilePreviewUrl)
+      );
+      if (fs.existsSync(oldProfile)) fs.unlinkSync(oldProfile);
+    }
+
+    const deleted = await Resume.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ message: "Resume not found or unauthorized" });
+    }
+    res.json({message: "Resume deleted successfully"})
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to create reume", error: error.message });
+  }
+};
 
 module.exports = {
   createResume,
