@@ -1,7 +1,11 @@
 import express from "express";
-import protect from "../middlewares/authMiddleware";
-import { createResume } from "../controllers/resumeController";
+import protect from "../middlewares/authMiddleware.js";
+import { createResume, updateResume } from "../controllers/resumeController.js";
+import upload from "../configs/multer.js";
 
-const resumeRouter = express.Router()
+const resumeRouter = express.Router();
 
-resumeRouter.post('/create', protect, createResume)
+resumeRouter.post("/create", protect, createResume);
+resumeRouter.put("/update", upload.single("image"), protect, updateResume);
+resumeRouter.delete("/delete/:resumeId", protect, createResume);
+
