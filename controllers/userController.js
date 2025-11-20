@@ -4,9 +4,9 @@ import bcrypt from "bcrypt";
 import Resume from "../models/Resume.js";
 
 const generateToken = (userId) => {
-  const token = jwt.sign(userId, process.env.JWT_SECRET, { expiresIn: "7d" });
-  return token;
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
+
 
 //controller for user registration
 //POST: /api/users/register
