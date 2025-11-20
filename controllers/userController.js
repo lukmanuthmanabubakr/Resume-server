@@ -10,7 +10,7 @@ const generateToken = (userId) => {
 
 //controller for user registration
 //POST: /api/users/register
-export const registerUser = async () => {
+export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -48,7 +48,7 @@ export const registerUser = async () => {
 //controller for user logining
 //POST: /api/users/login
 
-export const loginUser = async () => {
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -79,7 +79,7 @@ export const loginUser = async () => {
 //controller for user logining
 //GET: /api/users/data
 
-export const getUserById = async () => {
+export const getUserById = async (req, res) => {
   try {
     const userId = req.userId;
 
