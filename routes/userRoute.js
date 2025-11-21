@@ -4,12 +4,14 @@ import {
   getUserResumes,
   loginUser,
   registerUser,
+  verifyUser,
 } from "../controllers/userController.js";
 import protect from "../middlewares/authMiddleware.js";
 
 const userRouter = express.Router();
 
 userRouter.post("/register", registerUser);
+userRouter.get("/verify/:token", verifyUser);
 userRouter.post("/login", loginUser);
 userRouter.get("/data", protect, getUserById);
 userRouter.get("/resumes", protect, getUserResumes);

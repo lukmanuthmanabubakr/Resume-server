@@ -2,11 +2,14 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import Resume from "../models/Resume.js";
+import crypto from "crypto";
+import VerificationToken from "../models/VerificationToken.js";
+import { verificationEmailTemplate } from "../utils/emailTemplates.js";
+import { transporter } from "../configs/nodemailer.js";
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
-
 
 //controller for user registration
 //POST: /api/users/register
@@ -14,36 +17,64 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    //check if require fields are present
-    if (!name || !email || !password) {
+    if (!name || !email || !password)
       return res.status(400).json({ message: "Missing required fields" });
-    }
 
-    //chekc if user already exists
-    const user = await User.findOne({ email });
-    if (user) {
+    const userExists = await User.findOne({ email });
+    if (userExists)
       return res.status(400).json({ message: "User already exists" });
-    }
 
-    //Create a new user
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = await User.create({
       name,
       email,
       password: hashedPassword,
+      isVerified: false,
     });
 
-    //Return success message
-    const token = generateToken(newUser._id);
-    newUser.password = undefined;
+    // Generate verification token
+    const token = crypto.randomBytes(32).toString("hex");
 
-    return res
-      .status(201)
-      .json({ message: "User created successfully", token, user: newUser });
+    await VerificationToken.create({
+      userId: newUser._id,
+      token,
+      expiresAt: new Date(Date.now() + 3600000),
+    });
+
+    // Send email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: newUser.email,
+      subject: "Verify Your Email",
+      html: verificationEmailTemplate(newUser.name, token),
+    });
+
+    return res.status(201).json({
+      message: "User created successfully. Verification email sent.",
+    });
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
+
+export const verifyUser = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const tokenDoc = await VerificationToken.findOne({ token });
+    if (!tokenDoc) return res.status(400).json({ message: "Invalid token" });
+
+    await User.findByIdAndUpdate(tokenDoc.userId, { isVerified: true });
+
+    await tokenDoc.deleteOne();
+
+    return res.json({ message: "Email verified successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 
 //controller for user logining
 //POST: /api/users/login
