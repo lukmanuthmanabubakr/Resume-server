@@ -22,6 +22,13 @@ export const registerUser = async (req, res) => {
     if (!name || !email || !password)
       return res.status(400).json({ message: "Missing required fields" });
 
+    // ✅ Check password length
+    if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ message: "Password cannot exceed 8 characters" });
+    }
+
     const userExists = await User.findOne({ email });
     if (userExists)
       return res.status(400).json({ message: "User already exists" });
@@ -168,12 +175,10 @@ export const resetPassword = async (req, res) => {
     await tokenDoc.deleteOne();
 
     res.json({ message: "Password reset successfully" });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 //Get user id
 //controller for user logining
