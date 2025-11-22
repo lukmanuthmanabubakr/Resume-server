@@ -74,11 +74,24 @@ export const verifyUser = async (req, res) => {
     const tokenDoc = await VerificationToken.findOne({ token });
     if (!tokenDoc) return res.status(400).json({ message: "Invalid token" });
 
-    await User.findByIdAndUpdate(tokenDoc.userId, { isVerified: true });
+    // Update user as verified
+    const user = await User.findByIdAndUpdate(
+      tokenDoc.userId, 
+      { isVerified: true },
+      { new: true } // Return updated user
+    );
 
     await tokenDoc.deleteOne();
 
-    return res.json({ message: "Email verified successfully" });
+    // Generate JWT token for auto-login
+    const authToken = generateToken(user._id);
+    user.password = undefined;
+
+    return res.json({ 
+      message: "Email verified successfully",
+      token: authToken,
+      user
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
