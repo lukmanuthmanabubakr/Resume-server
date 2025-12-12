@@ -53,6 +53,16 @@ const ResumeSchema = new mongoose.Schema(
         name: { type: String },
         type: { type: String },
         description: { type: String },
+        link: {
+          type: String,
+          default: "",
+          validate: {
+            validator: function (v) {
+              return !v || /^https?:\/\/.+/.test(v);
+            },
+            message: "Please enter a valid URL.",
+          },
+        },
       },
     ],
     education: [
