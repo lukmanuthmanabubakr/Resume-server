@@ -56,7 +56,7 @@ export const verificationEmailTemplate = (name, token) => {
 
         <!-- Greeting -->
         <h2 class="email-heading" style="color: #111827; font-size: 24px; margin: 0 0 20px 0; font-weight: 600;">
-          Hello ${name}! 👋
+          Hello ${name}!
         </h2>
         
         <!-- Main Message -->
@@ -144,7 +144,7 @@ export const resetPasswordEmailTemplate = (name, token) => {
       
       <div class="email-card" style="max-width:600px; margin:0 auto; background:#ffffff; padding:40px 30px; border-radius:12px; border:1px solid #eaeaea; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
 
-        <!-- Logo -->
+        
         <div style="text-align:center; margin-bottom:32px;">
           <table align="center" cellspacing="0" cellpadding="0" border="0">
             <tr>
