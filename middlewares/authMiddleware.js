@@ -9,7 +9,7 @@ const protect = async (req, res, next) => {
   
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id; // ✅ Change 'userId' to 'id'
+    req.userId = decoded.id; // this change 'userId' to 'id'
     next();
   } catch (error) {
     return res.status(401).json({ message: "Unauthorized" });
